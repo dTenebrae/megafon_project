@@ -26,6 +26,8 @@ data_test.csv: id, vas_id, buy_time
 **Метрика**:
 Невзвешенная f1 (f1_score(..., average='macro') из библиотеки sklearn)
 
+Полученная метрика: 0.89 на oversampled данных
+
 **Репозиторий** содержит:
 
 1. Работающую модель в формате pickle в папке **model**, которая принимает файл data_test.csv из корневой папки и записывает в эту же папку файл answers_test.csv. В этом файле должны находится 4 столбца: buy_time, id, vas_id и target.
