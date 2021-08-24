@@ -43,7 +43,7 @@ green_list = [
         '49',
         '50',
         '54',
-        '55',
+        # '55',
         '56',
         '58',
         '59',
@@ -130,6 +130,10 @@ if __name__ == "__main__":
     df_test = pd.read_pickle(MERGED_TEST)
     result_df = pd.read_csv(TEST)
 
+    df_train['buy_time'] = df_train['buy_time'].astype('category')
+    df_test['buy_time'] = df_test['buy_time'].astype('category')
+    cat_feats = df_train.select_dtypes(include='category').columns.tolist()
+
     X = df_train.drop(['target'], axis=1)
     y = df_train['target'].astype(int)
 
@@ -146,7 +150,6 @@ if __name__ == "__main__":
     print('Resample dataset shape', Counter(y_ros))
     print("=" * 25)
 
-    cat_feats = df_train.select_dtypes(include='category').columns.tolist()
 
     print("Training model")
     lgb_model = LGBMClassifier(objective='binary',

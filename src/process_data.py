@@ -25,7 +25,6 @@ def col_transform(df: pd.DataFrame):
         diff = df[col].fillna(0).astype(int).sum() - df[col].fillna(0).sum()
         if diff == 0:
             df[col] = df[col].astype(np.int32)
-    # TODO Check if buy_time is in columns
     df.sort_values(by=['buy_time'], inplace=True)
 
 
@@ -60,7 +59,7 @@ def categorical_columns(df: pd.DataFrame, thr=20) -> list():
     """
     result = []
     for col in tqdm(df.columns):
-        if df[col].nunique() <= thr:
+        if (df[col].nunique() <= thr) and (col != 'buy_time'):
             result.append(col)
     return result
 
@@ -68,14 +67,13 @@ def process_feat(df: pd.DataFrame):
     const_feats = constant_columns(df, thr=0.9)
     df.drop(const_feats, axis=1, inplace=True)
     drop_correlated(df, threshold=0.8)
+    cat_feats = categorical_columns(df, thr=50)
+    df[cat_feats] = df[cat_feats].astype('category')
 
 def process_merged(df: pd.DataFrame) -> pd.DataFrame:
     df_merged = pd.merge_asof(df, df_feat, on='buy_time', by='id', direction='nearest')
     df_merged['buy_time'] = df_merged.apply(lambda x: pd.Timestamp.fromtimestamp(x['buy_time']), axis=1)
     df_merged['buy_time'] = df_merged['buy_time'].dt.weekofyear
-
-    cat_feats = categorical_columns(df_merged, thr=50)
-    df_merged[cat_feats] = df_merged[cat_feats].astype('category')
 
     return df_merged
 
